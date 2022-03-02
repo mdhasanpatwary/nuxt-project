@@ -35,8 +35,39 @@ export default {
   buildModules: [],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  modules: ["@nuxtjs/axios"],
+
+  axios: {
+    baseURL:
+      process.env.BASE_URL ||
+      "https://nuxt-blog-6369d-default-rtdb.firebaseio.com",
+    credentials: false,
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+
+  //hand writen code for learn
+  env: {
+    baseUrl:
+      process.env.BASE_URL ||
+      "https://nuxt-blog-6369d-default-rtdb.firebaseio.com",
+  },
+
+  //hand writen code for learn not necessary
+  // router: {
+  //   extendRoutes(routes, resolve) {
+  //     routes.push({
+  //       path: "*",
+  //       component: resolve(__dirname, "pages/index.vue"),
+  //     });
+  //   },
+  //   linkActiveClass: "active",
+  // },
+  // srcDir: 'client-app/',
+  // rootDir: '/',
+  transition: {
+    name: "fade",
+    mode: "out-in",
+  },
 };

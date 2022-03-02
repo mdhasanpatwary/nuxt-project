@@ -9,42 +9,69 @@ const createStore = () => {
       setPosts(state, payload) {
         state.loadedPosts = payload;
       },
+      addPost(state, post) {
+        state.loadedPosts.push(post);
+      },
+      editPost(state, editedPost) {
+        const postIndex = state.loadedPosts.findIndex(
+          (post) => post.id === editedPost.id
+        );
+        state.loadedPosts[postIndex] = editedPost;
+      },
     },
     actions: {
       nuxtServerInit(vuexContext, context) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            vuexContext.commit("setPosts", [
-              {
-                id: "1",
-                title: "Hello World!",
-                previewText: "preview Text",
-                thumbnail:
-                  "https://images.ctfassets.net/hrltx12pl8hq/zpozZxV0PvBUevOlUkpEK/220a46578f42ba182231eb7d91051f61/04-technology_1218220324.jpg?fit=fill&w=480&h=270",
-              },
-              {
-                id: "2",
-                title: "Hello World! 2",
-                previewText: "preview Text 2",
-                thumbnail:
-                  "https://images.ctfassets.net/hrltx12pl8hq/zpozZxV0PvBUevOlUkpEK/220a46578f42ba182231eb7d91051f61/04-technology_1218220324.jpg?fit=fill&w=480&h=270",
-              },
-              {
-                id: "3",
-                title: "Hello World! 3",
-                previewText: "preview Text 3",
-                thumbnail:
-                  "https://images.ctfassets.net/hrltx12pl8hq/zpozZxV0PvBUevOlUkpEK/220a46578f42ba182231eb7d91051f61/04-technology_1218220324.jpg?fit=fill&w=480&h=270",
-              },
-            ]);
-            resolve();
-          }, 1500);
-        })
+        return (
+          context.app.$axios
+            // .get("https://nuxt-blog-6369d-default-rtdb.firebaseio.com/posts.json")
+            .$get("/posts.json")
+            .then((data) => {
+              const postsArray = [];
+              for (const key in data) {
+                postsArray.push({ ...data[key], id: key });
+              }
+              vuexContext.commit("setPosts", postsArray);
+            })
+            .catch((e) => {
+              console.log(e);
+            })
+        );
+      },
+      addPost(vuexContext, postData) {
+        const createdPost = {
+          ...postData,
+          updatedDate: new Date(),
+        };
+
+        return this.$axios
+          .$post(
+            "https://nuxt-blog-6369d-default-rtdb.firebaseio.com/posts.json",
+            createdPost
+          )
           .then((data) => {
-            context.store.commit("setPosts", data.loadedPosts);
+            vuexContext.commit("addPost", {
+              ...createdPost,
+              id: data.name,
+            });
           })
           .catch((e) => {
-            context.error(e);
+            console.log(e);
+          });
+      },
+      editPost(vuexContext, editedPost) {
+        return this.$axios
+          .$put(
+            "https://nuxt-blog-6369d-default-rtdb.firebaseio.com/posts/" +
+              // this.$route.params.postId +
+              editedPost.id +
+              ".json",
+            editedPost
+          )
+          .then((res) => {
+            vuexContext.commit("editPost", editedPost);
+          })
+          .catch((e) => {
+            console.log(context.error(e));
           });
       },
       setPosts(vuexContext, payload) {
