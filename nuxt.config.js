@@ -52,6 +52,7 @@ export default {
     baseUrl:
       process.env.BASE_URL ||
       "https://nuxt-blog-6369d-default-rtdb.firebaseio.com",
+    fbAPIKey: "AIzaSyB1gYv_V0FljrhbdESDK498gox59YXqM0o",
   },
 
   //hand writen code for learn not necessary
@@ -70,4 +71,8 @@ export default {
     name: "fade",
     mode: "out-in",
   },
+  // router: {
+  //   middleware: "log",
+  //   // middleware: "auth",
+  // },
 };
